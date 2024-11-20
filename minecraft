@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Minecraft-like Game</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// Set up the scene
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Create a simple cube (block)
+const geometry = new THREE.BoxGeometry();
+const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+
+// Set the camera position
+camera.position.z = 5;
+
+// Handle key events for movement
+let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'w') moveForward = true;
+    if (event.key === 's') moveBackward = true;
+    if (event.key === 'a') moveLeft = true;
+    if (event.key === 'd') moveRight = true;
+});
+document.addEventListener('keyup', (event) => {
+    if (event.key === 'w') moveForward = false;
+    if (event.key === 's') moveBackward = false;
+    if (event.key === 'a') moveLeft = false;
+    if (event.key === 'd') moveRight = false;
+});
+
+// Animation loop to move the cube and render the scene
+function animate() {
+    requestAnimationFrame(animate);
+    
+    // Simple movement controls
+    if (moveForward) cube.position.z -= 0.1;
+    if (moveBackward) cube.position.z += 0.1;
+    if (moveLeft) cube.position.x -= 0.1;
+    if (moveRight) cube.position.x += 0.1;
+
+    // Render the scene
+    renderer.render(scene, camera);
+}
+
+// Start the animation loop
+animate();
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft-like Game with Enemy Attack</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// Set up the scene, camera, and renderer
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Create the player (simple cube)
+const playerGeometry = new THREE.BoxGeometry();
+const playerMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const player = new THREE.Mesh(playerGeometry, playerMaterial);
+scene.add(player);
+player.position.y = 0.5; // Slightly above the ground
+
+// Create an enemy (simple cube)
+const enemyGeometry = new THREE.BoxGeometry(1, 1, 1);
+const enemyMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+const enemy = new THREE.Mesh(enemyGeometry, enemyMaterial);
+scene.add(enemy);
+enemy.position.set(5, 0.5, 5); // Position the enemy
+
+// Set up the camera
+camera.position.z = 10;
+
+// Player's health
+let playerHealth = 100;
+function takeDamage(amount) {
+    playerHealth -= amount;
+    console.log(`Player health: ${playerHealth}`);
+    if (playerHealth <= 0) {
+        console.log("Player is defeated!");
+        // Reset the game or respawn the player
+    }
+}
+
+// Enemy attack properties
+const attackRange = 2; // Attack range
+const attackDamage = 10; // Damage dealt by enemy
+let lastAttackTime = 0; // Last attack time
+const attackCooldown = 1.5; // Cooldown between attacks in seconds
+
+// Function to check if the player is within attack range
+function checkEnemyAttack() {
+    const distance = Math.sqrt(
+        Math.pow(player.position.x - enemy.position.x, 2) +
+        Math.pow(player.position.z - enemy.position.z, 2)
+    );
+
+    // Check if player is in attack range and cooldown has passed
+    if (distance < attackRange && Date.now() - lastAttackTime > attackCooldown * 1000) {
+        attackPlayer(); // Attack player if in range
+    }
+}
+
+// Attack the player
+function attackPlayer() {
+    console.log("Enemy attacks player!");
+    takeDamage(attackDamage); // Damage the player
+    lastAttackTime = Date.now(); // Reset the attack cooldown timer
+    enemyAttackAnimation(); // Flash enemy red when attacking
+}
+
+// Flash enemy red when attacking
+function enemyAttackAnimation() {
+    enemy.material.color.set(0xff0000); // Red color when attacking
+    setTimeout(() => {
+        enemy.material.color.set(0xff0000); // Reset color after a short delay
+    }, 200); // Flash duration
+}
+
+// Move the enemy towards the player
+function moveEnemy() {
+    const speed = 0.05;
+    const dx = player.position.x - enemy.position.x;
+    const dz = player.position.z - enemy.position.z;
+
+    if (Math.abs(dx) > 0.1) {
+        enemy.position.x += (dx > 0 ? speed : -speed);
+    }
+    if (Math.abs(dz) > 0.1) {
+        enemy.position.z += (dz > 0 ? speed : -speed);
+    }
+
+    // Check if the enemy should attack the player
+    checkEnemyAttack();
+}
+
+// Handle player movement with WASD keys
+let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+document.addEvent
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft-like Game</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// Setup scene, camera, and renderer
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Create a simple cube geometry (for blocks)
+const blockGeometry = new THREE.BoxGeometry(1, 1, 1);
+const blockMaterial = new THREE.MeshBasicMaterial({ color: 0x8B4513 }); // Brown for the block
+
+// Function to create a block at a given position
+function createBlock(x, y, z) {
+    const block = new THREE.Mesh(blockGeometry, blockMaterial);
+    block.position.set(x, y, z);
+    scene.add(block);
+    return block;
+}
+
+// Create a 10x10 grid of blocks (basic world generation)
+for (let i = -5; i < 5; i++) {
+    for (let j = -5; j < 5; j++) {
+        createBlock(i, 0, j);
+    }
+}
+
+// Setup player (a cube)
+const playerGeometry = new THREE.BoxGeometry(0.5, 1, 0.5);
+const playerMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Green player
+const player = new THREE.Mesh(playerGeometry, playerMaterial);
+scene.add(player);
+player.position.set(0, 0.5, 0); // Start position of the player
+
+// Camera setup
+camera.position.set(0, 3, 5);
+camera.lookAt(player.position);
+
+// Handle player movement
+let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'w') moveForward = true;
+    if (event.key === 's') moveBackward = true;
+    if (event.key === 'a') moveLeft = true;
+    if (event.key === 'd') moveRight = true;
+});
+document.addEventListener('keyup', (event) => {
+    if (event.key === 'w') moveForward = false;
+    if (event.key === 's') moveBackward = false;
+    if (event.key === 'a') moveLeft = false;
+    if (event.key === 'd') moveRight = false;
+});
+
+// Simple player movement based on input
+function movePlayer() {
+    const speed = 0.1;
+    if (moveForward) player.position.z -= speed;
+    if (moveBackward) player.position.z += speed;
+    if (moveLeft) player.position.x -= speed;
+    if (moveRight) player.position.x += speed;
+}
+
+// Handle block placement (using mouse click)
+let mouse = new THREE.Vector2();
+let raycaster = new THREE.Raycaster();
+
+function onMouseClick(event) {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.updateMatrixWorld();
+    raycaster.setFromCamera(mouse, camera);
+
+    const intersects = raycaster.intersectObjects(scene.children);
+    if (intersects.length > 0) {
+        const point = intersects[0].point;
+        createBlock(Math.floor(point.x), Math.floor(point.y), Math.floor(point.z)); // Place block at clicked point
+    }
+}
+window.addEventListener('click', onMouseClick, false);
+
+// Animation loop
+function animate() {
+    requestAnimationFrame(animate);
+
+    movePlayer(); // Update player movement
+
+    renderer.render(scene, camera);
+}
+
+animate(); // Start the animation loop
+
+</script>
+</body>
+</html>
